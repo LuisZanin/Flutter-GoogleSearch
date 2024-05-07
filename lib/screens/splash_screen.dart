@@ -17,10 +17,10 @@ import 'package:googlenav/screens/home_screen.dart';
     void initState() {
       super.initState();
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-      
+
       Future.delayed( const Duration(seconds: 5), () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) => HomeScreen(),
+          builder: (_) => const HomeScreen(),
         ));
       });
     }
@@ -47,8 +47,8 @@ import 'package:googlenav/screens/home_screen.dart';
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset("./images/logo.gif",
-                    height: 300.0,
-                    width: 300.0,
+                    height: 250.0,
+                    width: 250.0,
                   ),
                   const Text('Atak Sistemas',
                     style: TextStyle(

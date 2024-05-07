@@ -35,70 +35,45 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.search = void 0;
-var jsdom_1 = require("jsdom");
-function search(data_1) {
-    return __awaiter(this, arguments, void 0, function (data, start) {
-        var url, response, data_2, results, error_1;
-        if (start === void 0) { start = 0; }
+var axios_1 = __importDefault(require("axios"));
+var search_1 = require("../../../api/src/logic/search");
+describe('Teste de Requisição', function () {
+    it('O teste faz uma requisição para a query "Maringá" e espera um corpo não nulo e não em branco', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 4, , 5]);
-                    url = "https://www.google.com/search?q=".concat(data, "&start=").concat(start);
-                    return [4 /*yield*/, fetch(url, {
-                            headers: {
-                                'Content-Type': 'text/html; charset=UTF-8',
-                            }
-                        })];
+                case 0: return [4 /*yield*/, axios_1.default.get('http://localhost:3000/search/Maringá')];
                 case 1:
                     response = _a.sent();
-                    if (!(response.status === 200)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, response.text()];
-                case 2:
-                    data_2 = _a.sent();
-                    results = extrairLinks(data_2);
-                    if (results === undefined) {
-                        new Error('Erro ao extrair links');
-                    }
-                    return [2 /*return*/, results];
-                case 3: return [3 /*break*/, 5];
-                case 4:
-                    error_1 = _a.sent();
-                    console.error(error_1);
-                    throw error_1;
-                case 5: return [2 /*return*/];
+                    expect(response.data).not.toBeNull();
+                    expect(response.data).not.toBe('');
+                    return [2 /*return*/];
             }
         });
-    });
-}
-exports.search = search;
-function extrairLinks(html) {
-    try {
-        var dom = new jsdom_1.JSDOM(html);
-        var info = dom.window.document.querySelectorAll('a');
-        var resultados_1 = [];
-        info.forEach(function (info) {
-            var href = info.getAttribute('href');
-            var linkfilter = /\/url\?q=(https?:\/\/[^&]+)/;
-            var match = linkfilter.exec(href);
-            if (match) {
-                var url = decodeURIComponent(match[1]);
-                var tituloElement = info.querySelector('h3') || info.querySelector('div') || info.querySelector('span');
-                var titulo = tituloElement ? tituloElement.textContent.split('www.').shift() : '';
-                titulo = titulo.split('>').shift();
-                titulo = titulo.split('.org').shift();
-                titulo = titulo.split('\n').shift();
-                if (titulo !== '') {
-                    resultados_1.push({ link: url, titulo: titulo });
-                }
+    }); });
+});
+describe('Teste da função search', function () {
+    it('Verifica se a função search retorna uma resposta no formato JSON', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, search_1.search)('Maringá')];
+                case 1:
+                    response = _a.sent();
+                    expect(typeof response).toBe('object');
+                    expect(Array.isArray(response)).toBe(true);
+                    expect(function () { return JSON.stringify(response); }).not.toThrow();
+                    response.forEach(function (item) {
+                        expect(typeof item).toBe('object');
+                        expect(item).toHaveProperty('link');
+                        expect(item).toHaveProperty('titulo');
+                    });
+                    return [2 /*return*/];
             }
         });
-        return resultados_1;
-    }
-    catch (error) {
-        console.error(error);
-        return []; // Return an empty array in case of error
-    }
-}
+    }); });
+});

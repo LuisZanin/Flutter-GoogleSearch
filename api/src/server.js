@@ -44,27 +44,26 @@ var express_1 = __importDefault(require("express"));
 var app = (0, express_1.default)();
 var port = 3000;
 app.get('/search/:q', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var query, results, jsonString, json, error_1;
+    var query, start, results, jsonString, json, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 query = req.params.q;
+                start = Number(req.query.start) || 0;
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, search_1.search)(query)];
+                return [4 /*yield*/, (0, search_1.search)(query, start)];
             case 2:
                 results = _a.sent();
-                try {
-                    jsonString = JSON.stringify(results);
-                    json = JSON.parse(jsonString);
-                    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-                    res.json(json);
-                }
-                catch (error) {
+                if (results === undefined) {
                     res.status(500).send('Erro, os dados não estão no formato JSON');
                     return [2 /*return*/];
                 }
+                jsonString = JSON.stringify(results);
+                json = JSON.parse(jsonString);
+                res.setHeader('Content-Type', 'application/json; charset=utf-8');
+                res.json(json);
                 return [3 /*break*/, 4];
             case 3:
                 error_1 = _a.sent();

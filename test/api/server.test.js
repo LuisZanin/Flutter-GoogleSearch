@@ -35,70 +35,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.search = void 0;
-var jsdom_1 = require("jsdom");
-function search(data_1) {
-    return __awaiter(this, arguments, void 0, function (data, start) {
-        var url, response, data_2, results, error_1;
-        if (start === void 0) { start = 0; }
+var axios_1 = __importDefault(require("axios"));
+describe('Teste de Estabilidade do Servidor', function () {
+    it('Faz várias requisições para o servidor e verifica se todas são bem-sucedidas', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var requestPromises, requestCount, i, responses;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 4, , 5]);
-                    url = "https://www.google.com/search?q=".concat(data, "&start=").concat(start);
-                    return [4 /*yield*/, fetch(url, {
-                            headers: {
-                                'Content-Type': 'text/html; charset=UTF-8',
-                            }
-                        })];
-                case 1:
-                    response = _a.sent();
-                    if (!(response.status === 200)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, response.text()];
-                case 2:
-                    data_2 = _a.sent();
-                    results = extrairLinks(data_2);
-                    if (results === undefined) {
-                        new Error('Erro ao extrair links');
+                    requestPromises = [];
+                    requestCount = 100;
+                    for (i = 0; i < requestCount; i++) {
+                        requestPromises.push(axios_1.default.get('http://localhost:3000/search/Maringá'));
                     }
-                    return [2 /*return*/, results];
-                case 3: return [3 /*break*/, 5];
-                case 4:
-                    error_1 = _a.sent();
-                    console.error(error_1);
-                    throw error_1;
-                case 5: return [2 /*return*/];
+                    return [4 /*yield*/, Promise.all(requestPromises)];
+                case 1:
+                    responses = _a.sent();
+                    responses.forEach(function (response) {
+                        expect(response.status).toBe(200);
+                    });
+                    return [2 /*return*/];
             }
         });
-    });
-}
-exports.search = search;
-function extrairLinks(html) {
-    try {
-        var dom = new jsdom_1.JSDOM(html);
-        var info = dom.window.document.querySelectorAll('a');
-        var resultados_1 = [];
-        info.forEach(function (info) {
-            var href = info.getAttribute('href');
-            var linkfilter = /\/url\?q=(https?:\/\/[^&]+)/;
-            var match = linkfilter.exec(href);
-            if (match) {
-                var url = decodeURIComponent(match[1]);
-                var tituloElement = info.querySelector('h3') || info.querySelector('div') || info.querySelector('span');
-                var titulo = tituloElement ? tituloElement.textContent.split('www.').shift() : '';
-                titulo = titulo.split('>').shift();
-                titulo = titulo.split('.org').shift();
-                titulo = titulo.split('\n').shift();
-                if (titulo !== '') {
-                    resultados_1.push({ link: url, titulo: titulo });
-                }
-            }
-        });
-        return resultados_1;
-    }
-    catch (error) {
-        console.error(error);
-        return []; // Return an empty array in case of error
-    }
-}
+    }); }, 30000);
+});

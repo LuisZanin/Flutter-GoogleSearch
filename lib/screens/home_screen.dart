@@ -10,9 +10,14 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+
 class _HomeScreenState extends State<HomeScreen> {
   final BuscaController _buscaController = BuscaController();
   List<dynamic> _resultados = [];
+  String _ultimaBusca = '';
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,35 +32,42 @@ class _HomeScreenState extends State<HomeScreen> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('./images/atkicon.png', fit: BoxFit.contain, height: 30, width: 30,),
+          Image.asset('./images/atkicon.png',
+            fit: BoxFit.contain,
+            height: 70,
+            width: 30
+          ),
           const SizedBox(width: 10,),
           const Text(
             'Atak Searcher',
             style: TextStyle(
               color: Colors.black,
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold
             ),
           ),
         ],
       ),
-      backgroundColor: Colors.redAccent,
+      backgroundColor: Colors.redAccent
     );
   }
 
   Widget _createBody() {
     return Column(
       children: [
-        _createSearchContainer(),
-        _createResultsContainer(),
+        _createBuscaContainer(),
+        _createResultsContainer()
       ],
     );
   }
-  Container _createSearchContainer() {
+  Container _createBuscaContainer() {
     return Container(
-      margin: const EdgeInsets.only(top: 40, left: 20, right: 20),
+      margin: const EdgeInsets.only(
+          top: 40,
+          left: 20,
+          right: 20),
       decoration: _createBoxDecoration(),
-      child: _createSearchField(),
+      child: _createCampoBusca()
     );
   }
 
@@ -71,13 +83,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  TextField _createSearchField() {
+  TextField _createCampoBusca() {
     return TextField(
       controller: _buscaController.textController,
       onChanged: (text) {
         setState(() {});
       },
       onSubmitted: (text) async {
+        _ultimaBusca = text;
         _resultados = await _buscaController.performSearch(text);
         setState(() {});
       },
@@ -92,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         prefixIcon: InkWell(
           onTap: () async {
+            _ultimaBusca = _buscaController.textController.text;
             _resultados = await _buscaController.performSearch(_buscaController.textController.text);
             setState(() {});
           },
@@ -112,33 +126,77 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _createResultsContainer() {
     return Expanded(
       child: ListView.builder(
-        itemCount: _resultados.length,
+        controller: _scrollController,
+        itemCount: _resultados.length + 1,
         itemBuilder: (context, index) {
-          return _createResultTile(index);
+          if (index < _resultados.length) {
+            return _createCampoResultado(index);
+          } else {
+            return _isLoadingMore ? _createIndicadorLoading() : Container();
+          }
         },
       ),
     );
   }
 
-
-  Widget _createResultTile(int index) {
-    return Container(
-      decoration: const BoxDecoration(
-          color: Colors.black12,
-          borderRadius: BorderRadius.all(Radius.circular(15)),
+  Widget _createIndicadorLoading() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.only(
+          top: 20,
+          bottom: 20),
+        child: const CircularProgressIndicator(
+          color: Colors.black,
         ),
-      margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
-      child: ListTile(
-        title: Text(_resultados[index]['titulo']),
-        subtitle: _createLinkInkWell(index),
       ),
     );
   }
 
-  InkWell _createLinkInkWell(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  _scrollListener() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      _loadMoreResults();
+    }
+  }
+
+  _loadMoreResults() async {
+    setState(() {
+      _isLoadingMore = true;
+    });
+    var moreResults = await _buscaController.performSearch(_ultimaBusca, true);
+    setState(() {
+      _resultados.addAll(moreResults);
+      _isLoadingMore = false;
+    });
+  }
+
+  Widget _createCampoResultado(int index) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.black12,
+        borderRadius: BorderRadius.all(
+            Radius.circular(15)),
+      ),
+      margin: const EdgeInsets.only(
+          top: 10,
+          left: 20,
+          right: 20),
+      child: ListTile(
+        title: Text(_resultados[index]['titulo']),
+        subtitle: _createCamposLinks(index),
+      ),
+    );
+  }
+
+  InkWell _createCamposLinks(int index) {
     return InkWell(
       child: Text(
-      _resultados[index]['link'],
+        _resultados[index]['link'],
         style: const TextStyle(color: Colors.blue),
       ),
       onTap: () async {
@@ -146,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (await canLaunchUrlString(url)) {
           await launchUrlString(url);
         } else {
-          throw 'Não foi possível Iniciar o link:$url';
+          throw 'Não foi possível Iniciar o link: $url';
         }
       },
     );
