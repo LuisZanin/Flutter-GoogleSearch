@@ -41,8 +41,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var search_1 = require("./logic/search");
 var express_1 = __importDefault(require("express"));
+var cors_1 = __importDefault(require("cors"));
 var app = (0, express_1.default)();
 var port = 3000;
+app.use((0, cors_1.default)());
 app.get('/search/:q', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var query, start, results, jsonString, json, error_1;
     return __generator(this, function (_a) {
