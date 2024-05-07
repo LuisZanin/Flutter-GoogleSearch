@@ -5,13 +5,13 @@ Um novo projeto Flutter para realizar pesquisas no Google sem utilizar nenhuma A
 ## Tecnologias Utilizadas
 
 ### Interface
--Flutter(Dart)
+- Flutter(Dart)
 
 ### API
--NodeJs
--TypeScript
--Express
--Jest
+- NodeJs
+- TypeScript
+- Express
+- Jest
 
 ## Instruções de Como Rodar
 
