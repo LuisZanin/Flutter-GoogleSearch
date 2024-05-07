@@ -10,15 +10,11 @@ export async function search(data : any, start : number = 0) {
         })
         if(response.status === 200) {
             let data = await response.text();
-            const results = extrairLinks(data);
-            if (results === undefined) {
-                new Error('Erro ao extrair links');
-            }
-            return results;
+
+            return extrairLinks(data);
         }
     } catch (error) {
         console.error(error)
-        throw error;
     }
 }
 
@@ -50,6 +46,6 @@ function extrairLinks(html : any) {
 
     } catch (error) {
         console.error(error)
-        return []; // Return an empty array in case of error
+        return [];
     }
 }
