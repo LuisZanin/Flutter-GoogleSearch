@@ -47,4 +47,8 @@ Caso não tenha um emulador instalado, roda pelo emulador da Web, funciona tamb�
 
 Prontinho! Agora é só utilizar como achar melhor!
 
+# Aviso
+
+- O Projeto possui um problema que não fui capaz de resolver por enquanto (Mas irei), o problema se trata da acentuação dos caracteres dos Títulos.
+
 # Obrigado!
