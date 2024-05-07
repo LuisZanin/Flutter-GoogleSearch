@@ -54,5 +54,12 @@ Prontinho! Agora é só utilizar como achar melhor!
 # Obrigado!
 
 
+
+# Vídeo Em Emulador Google Chrome
 https://github.com/LuisZanin/Flutter-GoogleSearch/assets/140721432/95fe009a-5a4f-4337-a830-a052daa4bd07
+
+
+# Vídeo Em Emulador Google Pixel 8
+https://github.com/LuisZanin/Flutter-GoogleSearch/assets/140721432/3a10dc93-2fab-4efe-8f5f-443a37bef599
+
 
