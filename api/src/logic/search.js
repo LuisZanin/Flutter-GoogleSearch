@@ -40,7 +40,7 @@ exports.search = void 0;
 var jsdom_1 = require("jsdom");
 function search(data_1) {
     return __awaiter(this, arguments, void 0, function (data, start) {
-        var url, response, data_2, results, error_1;
+        var url, response, data_2, error_1;
         if (start === void 0) { start = 0; }
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -58,16 +58,12 @@ function search(data_1) {
                     return [4 /*yield*/, response.text()];
                 case 2:
                     data_2 = _a.sent();
-                    results = extrairLinks(data_2);
-                    if (results === undefined) {
-                        new Error('Erro ao extrair links');
-                    }
-                    return [2 /*return*/, results];
+                    return [2 /*return*/, extrairLinks(data_2)];
                 case 3: return [3 /*break*/, 5];
                 case 4:
                     error_1 = _a.sent();
                     console.error(error_1);
-                    throw error_1;
+                    return [3 /*break*/, 5];
                 case 5: return [2 /*return*/];
             }
         });
@@ -99,6 +95,6 @@ function extrairLinks(html) {
     }
     catch (error) {
         console.error(error);
-        return []; // Return an empty array in case of error
+        return [];
     }
 }
