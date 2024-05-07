@@ -1,51 +1,33 @@
-import { JSDOM } from 'jsdom';
+import { search } from './logic/search';
+import express from 'express';
+import cors from 'cors'
 
-export async function search(data : any, start : number = 0) {
+
+
+const app = express();
+const port = 3000;
+
+app.use(cors());
+
+app.get('/search/:q', async (req, res) => {
+    const query = req.params.q;
+    const start = Number(req.query.start) || 0;
+
     try {
-        let url = `https://www.google.com/search?q=${data}&start=${start}`
-        const response = await fetch(url, {
-            headers: {
-                'Content-Type': 'text/html; charset=UTF-8',
-            }
-        })
-        if(response.status === 200) {
-            let data = await response.text();
-
-            return extrairLinks(data);
+        const results = await search(query, start);
+        if (results === undefined) {
+            res.status(500).send('Erro, os dados não estão no formato JSON');
+            return;
         }
+        const jsonString = JSON.stringify(results);
+        const json = JSON.parse(jsonString);
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.json(json);
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        res.status(500).send('Erro na pesquisa');
     }
-}
-
-function extrairLinks(html : any) {
-    try {
-        const dom = new JSDOM(html);
-        const info = dom.window.document.querySelectorAll('a');
-        let resultados = [];
-
-        info.forEach(info => {
-            const href = info.getAttribute('href');
-            const linkfilter = /\/url\?q=(https?:\/\/[^&]+)/;
-            const match = linkfilter.exec(href);
-            if (match) {
-                const url = decodeURIComponent(match[1]);
-                let tituloElement = info.querySelector('h3') || info.querySelector('div') || info.querySelector('span');
-                let titulo = tituloElement ? tituloElement.textContent.split('www.').shift() : '';
-                titulo = titulo.split('>').shift();
-                titulo = titulo.split('.org').shift();
-                titulo = titulo.split('\n').shift();
-
-                if(titulo !== '') {
-                    resultados.push({link: url, titulo});
-                }
-            }
-        });
-
-        return resultados;
-
-    } catch (error) {
-        console.error(error)
-        return [];
-    }
-}
+});
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta 3000`);
+});
