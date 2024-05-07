@@ -52,3 +52,7 @@ Prontinho! Agora é só utilizar como achar melhor!
 - O Projeto possui um problema que não fui capaz de resolver por enquanto (Mas irei), o problema se trata da acentuação dos caracteres dos Títulos.
 
 # Obrigado!
+
+
+https://github.com/LuisZanin/Flutter-GoogleSearch/assets/140721432/95fe009a-5a4f-4337-a830-a052daa4bd07
+
