@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:googlenav/controllers/appController.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import '../controllers/appController.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final BuscaController buscaController;
+
+  const HomeScreen({super.key, required this.buscaController});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-
 class _HomeScreenState extends State<HomeScreen> {
-  final BuscaController _buscaController = BuscaController();
   List<dynamic> _resultados = [];
   String _ultimaBusca = '';
   final ScrollController _scrollController = ScrollController();
   bool _isLoadingMore = false;
-
 
   @override
   Widget build(BuildContext context) {
@@ -29,26 +28,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   AppBar _createAppBar() {
     return AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('./images/atkicon.png',
-            fit: BoxFit.contain,
-            height: 70,
-            width: 30
-          ),
-          const SizedBox(width: 10,),
-          const Text(
-            'Atak Searcher',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('./images/atkicon.png',
+                fit: BoxFit.contain,
+                height: 70,
+                width: 30
             ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.redAccent
+            const SizedBox(width: 10,),
+            const Text(
+              'Atak Searcher',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.redAccent
     );
   }
 
@@ -60,14 +59,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
+
   Container _createBuscaContainer() {
     return Container(
-      margin: const EdgeInsets.only(
-          top: 40,
-          left: 20,
-          right: 20),
-      decoration: _createBoxDecoration(),
-      child: _createCampoBusca()
+        margin: const EdgeInsets.only(
+            top: 40,
+            left: 20,
+            right: 20),
+        decoration: _createBoxDecoration(),
+        child: _createCampoBusca()
     );
   }
 
@@ -85,13 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   TextField _createCampoBusca() {
     return TextField(
-      controller: _buscaController.textController,
+      controller: widget.buscaController.textController,
       onChanged: (text) {
         setState(() {});
       },
       onSubmitted: (text) async {
         _ultimaBusca = text;
-        _resultados = await _buscaController.performSearch(text);
+        _resultados = await widget.buscaController.performSearch(text);
         setState(() {});
       },
       decoration: InputDecoration(
@@ -105,8 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         prefixIcon: InkWell(
           onTap: () async {
-            _ultimaBusca = _buscaController.textController.text;
-            _resultados = await _buscaController.performSearch(_buscaController.textController.text);
+            _ultimaBusca = widget.buscaController.textController.text;
+            _resultados = await widget.buscaController.performSearch(widget.buscaController.textController.text);
             setState(() {});
           },
           child: Padding(
@@ -143,8 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Center(
       child: Container(
         margin: const EdgeInsets.only(
-          top: 20,
-          bottom: 20),
+            top: 20,
+            bottom: 20),
         child: const CircularProgressIndicator(
           color: Colors.black,
         ),
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _isLoadingMore = true;
     });
-    var moreResults = await _buscaController.performSearch(_ultimaBusca, true);
+    var moreResults = await widget.buscaController.performSearch(_ultimaBusca, true);
     setState(() {
       _resultados.addAll(moreResults);
       _isLoadingMore = false;
@@ -204,7 +204,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (await canLaunchUrlString(url)) {
           await launchUrlString(url);
         } else {
-          throw 'Não foi possível Iniciar o link: $url';
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Não foi possível abrir o link: $url'),
+          ));
         }
       },
     );
